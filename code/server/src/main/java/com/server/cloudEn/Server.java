@@ -7,7 +7,7 @@ import java.util.concurrent.*;
 
 public class Server {
 
-    private static ExecutorService threadPool = new ThreadPoolExecutor(30,300,60L,
+    private static final ExecutorService threadPool = new ThreadPoolExecutor(30,300,60L,
             TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
     public static void responseData(int port){
