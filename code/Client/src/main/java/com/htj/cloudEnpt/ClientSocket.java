@@ -17,7 +17,8 @@ public class ClientSocket {
     }
 
     public static void main(String[] args) {
-        ServerProp.getIpAndPort("./src/main/resources/server.properties");
+        ServerProp.initIpAndPort("./src/main/resources/server.properties");
+        new ClientSocket().sendData(ServerProp.ip, ServerProp.port, "hello world");
 
     }
 }

@@ -7,10 +7,10 @@ import java.util.Properties;
 
 public class ServerProp {
 
-    static String ip = "";
+    static String ip = "127.0.0.1";
     static  int port = 0;
 
-    public static void getIpAndPort(String path) {
+    public static void initIpAndPort(String path) {
         Properties prop = new Properties();
         try {
             InputStream in = new BufferedInputStream(new FileInputStream(path));
