@@ -5,9 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server {
 
+    //计数使用
+    private static AtomicInteger count = new AtomicInteger(1);
     //使用线程池进行数据处理发送等操作
     private static final ExecutorService threadPool = new ThreadPoolExecutor(30,300,60L,
             TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
@@ -24,6 +27,9 @@ public class Server {
             //服务端多线程处理，使用线程池(cacheThreadPool)
             while (true) {
                 final Socket socket = serverSocket.accept();
+                System.out.println("----------------------------------------");
+                System.out.println("第"+ count.get() +"次连接");
+                count.addAndGet(1);
                 Runnable duty = new Runnable() {
                     public void run() {
                         try {
@@ -35,10 +41,9 @@ public class Server {
                                 String s = new String(bytes, idx, len,"UTF-8");
                                 //System.out.println("idx = " + idx + "len = " + len);
                                 idx = len;
-                                System.out.println("从客户端收到的信息: " + s);
+                                System.out.println("客户端发送的信息: " + s);
                                 if ("#".equals(s)) { //响应客户端
-                                    System.out.println("----------------------------------------");
-                                    System.out.println("响应数据发送给客户端");
+                                    //System.out.println("响应数据发送给客户端");
                                     toClient(socket);
                                     strList = new LinkedList<String>();
                                     break;
@@ -63,6 +68,7 @@ public class Server {
      * @return
      */
     public static void toClient(Socket socket) throws IOException {
+        System.out.println("服务端发送给客户端的数据：");
         System.out.println(strList);
         if (strList == null || strList.size() <= 0) {
             return ;
