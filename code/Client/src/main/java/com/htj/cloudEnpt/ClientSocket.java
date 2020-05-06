@@ -3,7 +3,6 @@ package com.htj.cloudEnpt;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.LinkedList;
 
 public class ClientSocket {
 
@@ -82,7 +81,7 @@ public class ClientSocket {
      */
     public void receiveData(){
         System.out.println("----------------------------------------");
-        System.out.println("开始接收服务端返回的数据");
+        System.out.println("开始接收服务端返回的数据...");
         try {
             //Socket socket = new Socket(ServerProp.ip, ServerProp.port);
             InputStream in = socket.getInputStream();
