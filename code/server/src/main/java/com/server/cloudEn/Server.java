@@ -1,18 +1,26 @@
 package com.server.cloudEn;
 
-import java.io.InputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.concurrent.*;
 
 public class Server {
 
+    //使用线程池进行数据处理发送等操作
     private static final ExecutorService threadPool = new ThreadPoolExecutor(30,300,60L,
             TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
+    private static LinkedList<String> strList = new LinkedList<String>();
+    /**
+     * 服务端接收数据，然后进行拼接操作，再将结果发送给客户端
+     * @param port
+     */
     public static void responseData(int port){
+        System.out.println("服务器启动成功，等待客户端发送数据...");
         try {
-            final ServerSocket serverSocket = new ServerSocket(port);
+            final ServerSocket serverSocket = new ServerSocket(ServerProp.port);
             //服务端多线程处理，使用线程池(cacheThreadPool)
             while (true) {
                 final Socket socket = serverSocket.accept();
@@ -21,13 +29,22 @@ public class Server {
                         try {
                             InputStream inputStream = socket.getInputStream();
                             byte[] bytes = new byte[1024];
-                            StringBuilder s = new StringBuilder();
+                            int idx = 0;
                             int len;
-                            while ((len = inputStream.read(bytes)) != -1) {
-                                s.append(new String(bytes,0, len,"UTF-8"));
+                            while ((len = inputStream.read(bytes,idx, 1024 - idx)) != -1) {
+                                String s = new String(bytes, idx, len,"UTF-8");
+                                //System.out.println("idx = " + idx + "len = " + len);
+                                idx = len;
+                                System.out.println("从客户端收到的信息: " + s);
+                                if ("#".equals(s)) { //响应客户端
+                                    System.out.println("----------------------------------------");
+                                    System.out.println("响应数据发送给客户端");
+                                    toClient(socket);
+                                    strList = new LinkedList<String>();
+                                    break;
+                                }
+                                strList.add(s);
                             }
-                            System.out.println("get msg from client: " + s);
-                            inputStream.close();
                             socket.close();
                         }catch (Exception e){
                             e.printStackTrace();
@@ -41,8 +58,47 @@ public class Server {
         }
     }
 
+    /**
+     * 发送数据给客户端
+     * @return
+     */
+    public static void toClient(Socket socket) throws IOException {
+        System.out.println(strList);
+        if (strList == null || strList.size() <= 0) {
+            return ;
+        }
+        //格式化收到的数据
+        StringBuilder res = new StringBuilder();
+        StringBuilder ans = new StringBuilder();
+        for(String s : strList) {
+            res.append(s);
+            ans.append(s).append(",");
+        }
+        ans.append(res.toString());
+        writeData(ans.toString(), socket);
+    }
+
+    /**
+     * 服务端响应客户端的数据
+     * @param msg
+     * @param socket
+     */
+    public static void writeData(String msg, Socket socket) {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(msg.getBytes("UTF-8"));
+            outputStream.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 主函数，程序入口
+     * @param args
+     */
     public static void main(String[] args) {
-        ServerProp.initPort("./src/main/java/resources/server.properties");
+        ServerProp.initPort("./src/main/resources/server.properties");
         responseData(ServerProp.port);
     }
 }
