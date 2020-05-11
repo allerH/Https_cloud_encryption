@@ -69,7 +69,6 @@ public class Server {
      */
     public static void toClient(Socket socket) throws IOException {
         System.out.println("服务端发送给客户端的数据：");
-        System.out.println(strList);
         if (strList == null || strList.size() <= 0) {
             return ;
         }
@@ -81,6 +80,7 @@ public class Server {
             ans.append(s).append(",");
         }
         ans.append(res.toString());
+        System.out.println(ans);
         writeData(ans.toString(), socket);
     }
 
