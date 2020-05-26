@@ -9,10 +9,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server {
 
+    //核心线程数量
+    private static int corePoolNum = Runtime.getRuntime().availableProcessors() + 1;
     //计数使用
     private static AtomicInteger count = new AtomicInteger(1);
     //使用线程池进行数据处理发送等操作
-    private static final ExecutorService threadPool = new ThreadPoolExecutor(30,300,60L,
+    private static final ExecutorService threadPool = new ThreadPoolExecutor(corePoolNum,100,60L,
             TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),Executors.defaultThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
     private static LinkedList<String> strList = new LinkedList<String>();
