@@ -316,12 +316,25 @@ public class SM3 {
 
     public static void main(String[] args) {
         byte[] md = new byte[32];
-        byte[] msg1 = "ererfeiisgod".getBytes();
-        System.out.println(Util.byteToHex(msg1));
+        String plainText = "hello world";
+        System.out.println("输入的明文数据：" + plainText);
+        byte[] msg1 = plainText.getBytes();
+        //System.out.println(Util.byteToHex(msg1));
         SM3Digest sm3 = new SM3Digest();
         sm3.update(msg1, 0, msg1.length);
         sm3.doFinal(md, 0);
         String s = new String(Hex.encode(md));
-        System.out.println(s.toUpperCase());
+        System.out.println("计算得到的散列值：" + s.toUpperCase());
+        System.out.println("-----------------------------");
+        plainText = "I love the world";
+        System.out.println("修改明文为：" + plainText);
+
+        msg1 = plainText.getBytes();
+        //ystem.out.println(Util.byteToHex(msg1));
+        sm3 = new SM3Digest();
+        sm3.update(msg1, 0, msg1.length);
+        sm3.doFinal(md, 0);
+        s = new String(Hex.encode(md));
+        System.out.println("计算得到的散列值：" + s.toUpperCase());
     }
 }

@@ -178,7 +178,7 @@ public class SM2EncDecUtils {
 
     public static void main(String[] args) throws Exception
     {
-        String plainText = "ILoveYou11";
+        String plainText = "hello world";
         //SM3测试
         //生成密钥对
         //generateKeyPair();
@@ -196,11 +196,15 @@ public class SM2EncDecUtils {
         String privatekey = "0B1CE43098BC21B8E82B5C065EDB534CB86532B1900A49D49F3C53762D2997FA";
         prik=privatekey;
         pubk=publicKey;
-        System.out.println("加密: ");
+
+        System.out.println("输入的明文数据：" + plainText);
+        System.out.println("加密使用的公钥：" + pubk);
+        System.out.println("解密使用的私钥：" + prik);
+        System.out.print("加密的结果: ");
         String cipherText = SM2EncDecUtils.encrypt(Util.hexToByte(pubk), sourceData);
         //cipherText = "0452ba81cf5119c9f29c81c2be9c4a49ad8c0a33ed899b60548d21a62971a8e994cafc0e9fbc710a0a220b055804bb890833b50ac04ec4e130a5db75338c0c1d49a52a6d373076a5db370564a5cebb5300f79877003c52adf49dac16370e51e14e0754110547bb3b";
         System.out.println(cipherText);
-        System.out.println("解密: ");
+        System.out.print("解密后的结果: ");
         plainText = new String(SM2EncDecUtils.decrypt(Util.hexToByte(prik), Util.hexToByte(cipherText)));
         System.out.println(plainText);
 
