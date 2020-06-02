@@ -176,8 +176,42 @@ public class SM2EncDecUtils {
         return new BigInteger[] { r, s };
     }*/
 
+    /**
+     * 平均时间计算
+     * @param n
+     * @throws Exception
+     */
+    public static void avgTime(int n) throws IOException {
+        String plainText = "hello world";
+        String prik = "4cf170068e9c47ebdb521fb9fc62c4a55a5773fb9da33b0acf8129e28d09d205";
+        String pubk = "04aabda53043e8dcb86d42f690b61a4db869821dadf9f851ec3c5c43d0c8f95a6677fdba984afc3bb010a8436b1d17cefc2011a34e01e9e801124d29ffa928d803";
+        String publicKey ="04BB34D657EE7E8490E66EF577E6B3CEA28B739511E787FB4F71B7F38F241D87F18A5A93DF74E90FF94F4EB907F271A36B295B851F971DA5418F4915E2C1A23D6E";
+        String privatekey = "0B1CE43098BC21B8E82B5C065EDB534CB86532B1900A49D49F3C53762D2997FA";
+        prik=privatekey;
+        pubk=publicKey;
+        long encrptyTime = 0, decrptyTime = 0;
+        byte[] sourceData = plainText.getBytes();
+        for (int i =0 ; i < n; i++){
+            //System.out.println("输入的明文数据：" + plainText);
+            long decrptyStartTime = System.nanoTime();
+            String cipherText = SM2EncDecUtils.encrypt(Util.hexToByte(pubk), sourceData);
+            //cipherText = "0452ba81cf5119c9f29c81c2be9c4a49ad8c0a33ed899b60548d21a62971a8e994cafc0e9fbc710a0a220b055804bb890833b50ac04ec4e130a5db75338c0c1d49a52a6d373076a5db370564a5cebb5300f79877003c52adf49dac16370e51e14e0754110547bb3b";
+            //System.out.println("加密的结果：" + cipherText);
+            long decrptyEndTime = System.nanoTime();
+            encrptyTime +=  (decrptyEndTime - decrptyStartTime)/1000000L;
+            decrptyStartTime = System.nanoTime();
+            String plainTexts = new String(SM2EncDecUtils.decrypt(Util.hexToByte(prik), Util.hexToByte(cipherText)));
+            //System.out.println("解密后的结果：" + plainText);
+            decrptyEndTime = System.nanoTime();
+            decrptyTime += (decrptyEndTime - decrptyStartTime)/1000000L;
+        }
+        System.out.println(n +"次平均的加密时间为：" + encrptyTime/n);
+        System.out.println(n +"次平均的解密时间为：" + decrptyTime/n);
+    }
     public static void main(String[] args) throws Exception
     {
+
+        avgTime(5000);
         String plainText = "hello world";
         //SM3测试
         //生成密钥对
@@ -198,15 +232,17 @@ public class SM2EncDecUtils {
         pubk=publicKey;
 
         System.out.println("输入的明文数据：" + plainText);
-        System.out.println("加密使用的公钥：" + pubk);
-        System.out.println("解密使用的私钥：" + prik);
-        System.out.print("加密的结果: ");
+        long decrptyStartTime = System.nanoTime();
         String cipherText = SM2EncDecUtils.encrypt(Util.hexToByte(pubk), sourceData);
         //cipherText = "0452ba81cf5119c9f29c81c2be9c4a49ad8c0a33ed899b60548d21a62971a8e994cafc0e9fbc710a0a220b055804bb890833b50ac04ec4e130a5db75338c0c1d49a52a6d373076a5db370564a5cebb5300f79877003c52adf49dac16370e51e14e0754110547bb3b";
-        System.out.println(cipherText);
-        System.out.print("解密后的结果: ");
+        System.out.println("加密的结果：" + cipherText);
+        long decrptyEndTime = System.nanoTime();
+        System.out.println("加密操作花费的时间为：" + (decrptyEndTime - decrptyStartTime)/1000000L + "ms");
+        decrptyStartTime = System.nanoTime();
         plainText = new String(SM2EncDecUtils.decrypt(Util.hexToByte(prik), Util.hexToByte(cipherText)));
-        System.out.println(plainText);
+        System.out.println("解密后的结果：" + plainText);
+        decrptyEndTime = System.nanoTime();
+        System.out.println("解密操作花费的时间为：" + (decrptyEndTime - decrptyStartTime)/1000000L + "ms");
 
     }
 }

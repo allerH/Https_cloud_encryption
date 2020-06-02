@@ -1,6 +1,10 @@
 package com.htj.cloudEnpt;
 
 
+import cn.xjfme.encrypt.utils.Util;
+import cn.xjfme.encrypt.utils.sm2.SM2EncDecUtils;
+
+
 import java.io.*;
 import java.net.Socket;
 
@@ -38,24 +42,55 @@ public class ClientSocket {
     }
 
     /**
-     * 加密函数，解密客户端从服务端收到的数据
+     * sm4解密函数，解密客户端从服务端收到的数据
      * @param encryptData
      * @return
      */
-    public static String decrptyData(String encryptData){
-        return Singleton.getSm4Utils().decryptData_ECB(encryptData);
+    public static String decrptySM4(String encryptData){
+        return Singleton.getSm4Utils().decryptData_CBC(encryptData);
+        //return Singleton.getSm4Utils().decryptData_ECB(encryptData);
     }
 
     /**
-     * 加密函数，包含结尾符号处理
+     * sm4算法加密函数，加密客户端输入
      * @param plainText
      * @return
      */
-    public static String encrptyData(String plainText){
+    public static String encrptySM4(String plainText) {
+        return Singleton.getSm4Utils().encryptData_CBC(plainText);
+        //return Singleton.getSm4Utils().encryptData_ECB(plainText);
+    }
+
+    /**
+     * sm2解密函数，解密客户端从服务端收到的数据
+     * @param encryptData
+     * @return
+     */
+    public static String decrptySM2(String encryptData) throws Exception{
+        return new String(SM2EncDecUtils.decrypt(Util.hexToByte(Singleton.privatekey), Util.hexToByte(encryptData)));
+    }
+
+    /**
+     * sm2算法加密函数，加密客户端输入
+     * @param plainText
+     * @return
+     */
+    public static String encrptySM2(String plainText) throws Exception{
+        return new String(SM2EncDecUtils.encrypt(Util.hexToByte(Singleton.publicKey), plainText.getBytes()));
+    }
+
+
+    /**
+     * 加密控制
+     * @param plainText
+     * @return
+     */
+    public static String encrptyData(String plainText) throws Exception {
         if ("#".equals(plainText)){
             return "#";
         }
-        String encrptyText =  Singleton.getSm4Utils().encryptData_ECB(plainText);
+        //sm4加密
+        String encrptyText = encrptySM4(plainText);
         System.out.println("加密后的密文为：" + encrptyText);
         return encrptyText;
     }
@@ -100,13 +135,13 @@ public class ClientSocket {
     /**
      * 对服务端的数据解密展示
      */
-    public void showData(String s) {
+    public void showData(String s) throws Exception {
         String[] strs = s.split(",");
         String encrptyText = strs[strs.length - 1];
-        System.out.println("总的解密的结果是：" + decrptyData(encrptyText));
+        System.out.println("总的解密的结果是：" + decrptySM4(encrptyText));
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < strs.length - 1; i++){
-            res.append(decrptyData(strs[i]));
+            res.append(decrptySM4(strs[i]));
         }
         System.out.println("分开解密的结果是：" + res.toString());
     }
