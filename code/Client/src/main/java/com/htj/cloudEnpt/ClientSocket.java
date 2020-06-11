@@ -47,8 +47,8 @@ public class ClientSocket {
      * @return
      */
     public static String decrptySM4(String encryptData){
-        return Singleton.getSm4Utils().decryptData_CBC(encryptData);
-        //return Singleton.getSm4Utils().decryptData_ECB(encryptData);
+       // return Singleton.getSm4Utils().decryptData_CBC(encryptData);
+       return Singleton.getSm4Utils().decryptData_ECB(encryptData);
     }
 
     /**
@@ -57,8 +57,8 @@ public class ClientSocket {
      * @return
      */
     public static String encrptySM4(String plainText) {
-        return Singleton.getSm4Utils().encryptData_CBC(plainText);
-        //return Singleton.getSm4Utils().encryptData_ECB(plainText);
+        //return Singleton.getSm4Utils().encryptData_CBC(plainText);
+        return Singleton.getSm4Utils().encryptData_ECB(plainText);
     }
 
     /**

@@ -151,18 +151,21 @@ public class SM4Utils {
         SM4Utils sm4 = new SM4Utils();
         sm4.secretKey = "64EC7C763AB7BF64E2D75FF83A319918";
         sm4.hexString = true;
-        System.out.println("CBC模式加密");
+        //System.out.println("CBC模式加密");
+        System.out.println("ECB模式加密");
         long encrptyAvgTime = 0L;
         long decrptyAvgTime = 0L;
         for (int i =0 ; i< n; i++){
             long start = System.nanoTime();
-            String cipherText1 = sm4.encryptData_CBC(plainText);
+            //String cipherText1 = sm4.encryptData_CBC(plainText);
+            String cipherText1 = sm4.encryptData_ECB(plainText);
             //System.out.println("加密后的密文: " + cipherText1);
             long end = System.nanoTime();
             encrptyAvgTime += (end - start)/ 1000000L;
 
             start = System.nanoTime();
-            sm4.decryptData_CBC(cipherText1);
+            //sm4.decryptData_CBC(cipherText1);
+            sm4.decryptData_ECB(cipherText1);
             end = System.nanoTime();
             decrptyAvgTime += (end - start)/1000000L;
         }
@@ -171,20 +174,22 @@ public class SM4Utils {
     }
 
     public static void main(String[] args) throws IOException {
-        avgTime(100);
+        avgTime(1000);
+        long start = 0,end = 0;
         String plainText = "hello world";
+        SM4Utils sm4 = new SM4Utils();
+        sm4.secretKey = "64EC7C763AB7BF64E2D75FF83A319918";
+        sm4.hexString = true;
+        /*
         System.out.println("plainText = " + plainText);
         String s = Util.byteToHex(plainText.getBytes());
         //System.out.println("原文" + s);
-        SM4Utils sm4 = new SM4Utils();
-        //sm4.secretKey = "JeF8U9wHFOMfs2Y8";
-        sm4.secretKey = "64EC7C763AB7BF64E2D75FF83A319918";
-        sm4.hexString = true;
+
         System.out.println("CBC模式加密");
         sm4.iv = "31313131313131313131313131313131";
-        long start = System.nanoTime();
+        start = System.nanoTime();
         String cipherText2 = sm4.encryptData_CBC(plainText);
-        long end = System.nanoTime();
+        end = System.nanoTime();
         System.out.println("加密后的密文: " + cipherText2);
         System.out.println("CBC模式加密花费的时间：" + (double)(end - start)/ 1000000L+ "ms");
 
@@ -193,7 +198,7 @@ public class SM4Utils {
         end = System.nanoTime();
         System.out.println("解密明文: " + plainText3);
         System.out.println("CBC模式解密花费的时间：" + (double)(end - start)/ 1000000L+ "ms");
-
+        */
         System.out.println("------------------------------------");
         System.out.println("ECB模式加密");
         start = System.nanoTime();
@@ -208,8 +213,6 @@ public class SM4Utils {
         end = System.nanoTime();
         System.out.println("解密后的明文：" + plaintext_ecb);
         System.out.println("ECB模式解密花费的时间：" + (double)(end - start)/ 1000000L + "ms");
-
-
 
     }
 }

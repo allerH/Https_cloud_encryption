@@ -205,24 +205,18 @@ public class SM2EncDecUtils {
             decrptyEndTime = System.nanoTime();
             decrptyTime += (decrptyEndTime - decrptyStartTime)/1000000L;
         }
-        System.out.println(n +"次平均的加密时间为：" + encrptyTime/n);
-        System.out.println(n +"次平均的解密时间为：" + decrptyTime/n);
+        System.out.println(n +"次平均的加密时间为：" + encrptyTime/n + "ms");
+        System.out.println(n +"次平均的解密时间为：" + decrptyTime/n + "ms");
     }
     public static void main(String[] args) throws Exception
     {
 
-        avgTime(5000);
+        avgTime(1000);
         String plainText = "hello world";
         //SM3测试
         //生成密钥对
         //generateKeyPair();
         byte[] sourceData = plainText.getBytes();
-
-        //下面的秘钥可以使用generateKeyPair()生成的秘钥内容
-        // 国密规范正式私钥
-        //String prik = "3690655E33D5EA3D9A4AE1A1ADD766FDEA045CDEAA43A9206FB8C430CEFE0D94";
-        // 国密规范正式公钥
-        //String pubk = "04F6E0C3345AE42B51E06BF50B98834988D54EBC7460FE135A48171BC0629EAE205EEDE253A530608178A98F1E19BB737302813BA39ED3FA3C51639D7A20C7391A";
 
         String prik = "4cf170068e9c47ebdb521fb9fc62c4a55a5773fb9da33b0acf8129e28d09d205";
         String pubk = "04aabda53043e8dcb86d42f690b61a4db869821dadf9f851ec3c5c43d0c8f95a6677fdba984afc3bb010a8436b1d17cefc2011a34e01e9e801124d29ffa928d803";
