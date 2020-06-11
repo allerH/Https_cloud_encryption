@@ -25,19 +25,6 @@ public class Singleton {
         return sm4Utils;
     }
 
-    private static SM3 getSm3Utils(){
-        if (sm3Utils == null){
-            synchronized (Singleton.class){
-                if (sm3Utils == null) {
-                    sm3Utils = new SM3();
-                }
-                return sm3Utils;
-            }
-        }
-        return sm3Utils;
-    }
-
-
     public static Socket getClientSocket() {
         if (clientSocket == null) {
             synchronized (Singleton.class) {
