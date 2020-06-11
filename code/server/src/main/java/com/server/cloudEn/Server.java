@@ -106,7 +106,6 @@ public class Server {
      * @param args
      */
     public static void main(String[] args) {
-        ServerProp.initPort("./src/main/resources/server.properties");
         responseData(ServerProp.port);
     }
 }

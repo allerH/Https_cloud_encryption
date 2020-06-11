@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ServerProp {
-    static int port = 0;
+    static int port = 7878;
 
     public static void initPort(String path){
         try {
