@@ -211,11 +211,8 @@ public class SM2EncDecUtils {
     public static void main(String[] args) throws Exception
     {
 
-        avgTime(1000);
+        avgTime(5000);
         String plainText = "hello world";
-        //SM3测试
-        //生成密钥对
-        //generateKeyPair();
         byte[] sourceData = plainText.getBytes();
 
         String prik = "4cf170068e9c47ebdb521fb9fc62c4a55a5773fb9da33b0acf8129e28d09d205";

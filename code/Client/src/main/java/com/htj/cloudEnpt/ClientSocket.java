@@ -3,6 +3,8 @@ package com.htj.cloudEnpt;
 
 import cn.xjfme.encrypt.utils.Util;
 import cn.xjfme.encrypt.utils.sm2.SM2EncDecUtils;
+import org.bouncycastle.crypto.digests.SM3Digest;
+import org.bouncycastle.util.encoders.Hex;
 
 
 import java.io.*;
@@ -23,7 +25,16 @@ public class ClientSocket {
     /**
      * 获取用户输入，然后加密，发送到服务端
      */
-    public  void getInput() {
+    public void getInput() {
+        //身份验证
+        ensureId("connect to server");
+        if (!isSuccess()){
+            System.out.println("认证失败!!!");
+            return;
+        }
+        System.out.println("身份认证成功!!!");
+        System.out.println("开始接收用户输入数据...");
+        System.out.println("----------------------------------------");
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         int i = 1;
         String content = "";
@@ -46,9 +57,10 @@ public class ClientSocket {
      * @param encryptData
      * @return
      */
-    public static String decrptySM4(String encryptData){
-       // return Singleton.getSm4Utils().decryptData_CBC(encryptData);
-       return Singleton.getSm4Utils().decryptData_ECB(encryptData);
+    public static String decrptySM4(String encryptData) throws Exception{
+        //return Singleton.getSm4Utils().decryptData_CBC(encryptData);
+        return Singleton.getSm4Utils().decryptData_ECB(encryptData);
+        //return new String(SM2EncDecUtils.decrypt(Util.hexToByte(Singleton.privatekey), Util.hexToByte(encryptData)));
     }
 
     /**
@@ -56,29 +68,20 @@ public class ClientSocket {
      * @param plainText
      * @return
      */
-    public static String encrptySM4(String plainText) {
+    public static String encrptySM4(String plainText) throws Exception {
         //return Singleton.getSm4Utils().encryptData_CBC(plainText);
         return Singleton.getSm4Utils().encryptData_ECB(plainText);
+        //return new String(SM2EncDecUtils.encrypt(Util.hexToByte(Singleton.publicKey), plainText.getBytes()));
     }
 
-    /**
-     * sm2解密函数，解密客户端从服务端收到的数据
-     * @param encryptData
-     * @return
-     */
-    public static String decrptySM2(String encryptData) throws Exception{
-        return new String(SM2EncDecUtils.decrypt(Util.hexToByte(Singleton.privatekey), Util.hexToByte(encryptData)));
+    public static String getHash(String plainText){
+        byte[] md = new byte[32];
+        byte[] msg1 = plainText.getBytes();
+        SM3Digest sm3 = new SM3Digest();
+        sm3.update(msg1, 0, msg1.length);
+        sm3.doFinal(md, 0);
+        return new String(Hex.encode(md));
     }
-
-    /**
-     * sm2算法加密函数，加密客户端输入
-     * @param plainText
-     * @return
-     */
-    public static String encrptySM2(String plainText) throws Exception{
-        return new String(SM2EncDecUtils.encrypt(Util.hexToByte(Singleton.publicKey), plainText.getBytes()));
-    }
-
 
     /**
      * 加密控制
@@ -89,10 +92,13 @@ public class ClientSocket {
         if ("#".equals(plainText)){
             return "#";
         }
+        //生成hash值
+        String hash = getHash(plainText);
+        System.out.println("生成的hash数值为：" + hash);
         //sm4加密
         String encrptyText = encrptySM4(plainText);
         System.out.println("加密后的密文为：" + encrptyText);
-        return encrptyText;
+        return encrptyText + "|" + hash;
     }
 
     /**
@@ -145,7 +151,39 @@ public class ClientSocket {
         }
         System.out.println("分开解密的结果是：" + res.toString());
     }
+    /**
+     * 身份认证
+     */
+    private void ensureId(String plainText){
+        System.out.println("开始进行身份认证...");
+        //使用公钥加密某个字符串
+        try {
+            byte[] sourceData = plainText.getBytes();
+            String pubk ="04BB34D657EE7E8490E66EF577E6B3CEA28B739511E787FB4F71B7F38F241D87F18A5A93DF74E90FF94F4EB907F271A36B295B851F971DA5418F4915E2C1A23D6E";
+            String cipherText =  SM2EncDecUtils.encrypt(Util.hexToByte(pubk), sourceData);
+            sendData(cipherText);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
+    private boolean isSuccess(){
+        try {
+            //Socket socket = new Socket(ServerProp.ip, ServerProp.port);
+            InputStream in = socket.getInputStream();
+            byte[] buffer = new byte[1024];
+            StringBuilder s = new StringBuilder();
+            int len = 0;
+            while ((len = in.read(buffer)) != -1) {
+                s.append(new String(buffer, 0, len, "UTF-8"));
+                System.out.println("接收到服务端的数据为：" + s.toString());
+                return "OK".equals(s.toString());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
     /**
      * 主函数，程序入口
      * @param args

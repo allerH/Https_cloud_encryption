@@ -333,7 +333,7 @@ public class SM3 {
     }
 
     public static void main(String[] args) {
-        avgTime(100);
+        avgTime(1000);
         byte[] md = new byte[32];
         String plainText = "hello world";
         System.out.println("输入的明文数据：" + plainText);
